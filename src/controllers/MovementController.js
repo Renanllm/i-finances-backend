@@ -4,11 +4,19 @@ const Movement = mongoose.model('Movement');
 
 module.exports = {
     async getAll(req, res) {
-        const { page = 1 } = req.params;
-        const movements = await Movement.paginate({}, { page, limit: 5 });
-        
+        const { page = 1, limit } = req.query;
+        const movements = await Movement.paginate({},
+            {
+                page: parseInt(page),
+                limit: parseInt(limit),
+                sort: {
+                    createdAt: -1
+                }
+            }
+        );
+
         return res.json(movements.docs);
-    }, 
+    },
 
     async getById(req, res) {
         const movement = await Movement.findById(req.params.id);
