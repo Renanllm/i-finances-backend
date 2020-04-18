@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const Movement = mongoose.model('Movement');
+const Profile = mongoose.model('Profile');
 
 module.exports = {
     async getAll(req, res) {
@@ -27,11 +28,50 @@ module.exports = {
     async register(req, res) {
         const movement = await Movement.create(req.body);
 
+        const profile = await Profile.findOne();
+
+        if (profile) {
+            if (movement.value) {
+                const newBalance = movement.type === 'Saída' ?
+                    profile.balance - movement.value : profile.balance + movement.value;
+
+                await Profile.findByIdAndUpdate(
+                    profile._id,
+                    { ...profile._doc, balance: newBalance },
+                    { new: true, useFindAndModify: false }
+                );
+
+            }
+        }
+
         return res.json(movement);
     },
 
     async update(req, res) {
+        const oldMovement = await Movement.findById(req.params.id);
+
         const movement = await Movement.findByIdAndUpdate(req.params.id, req.body, { new: true, useFindAndModify: false });
+
+        const profile = await Profile.findOne();
+
+        if (profile) {
+            if (movement.value) {
+
+                let newBalance = oldMovement.type === 'Saída' ?
+                    profile.balance + oldMovement.value : profile.balance - oldMovement.value;
+                
+                profile.balance = newBalance;
+
+                newBalance = movement.type === 'Saída' ?
+                    profile.balance - movement.value : profile.balance + movement.value;
+
+                await Profile.findByIdAndUpdate(
+                    profile._id,
+                    { ...profile._doc, balance: newBalance },
+                    { new: true, useFindAndModify: false }
+                );
+            }
+        }
 
         return res.json(movement);
     },
