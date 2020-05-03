@@ -23,4 +23,4 @@ requireDir('./models');
 
 server.use('/api', require('./routes'));
 
-server.listen((process.env.PORT | 3000), () => console.log('Server start :)'));
+server.listen((process.env.PORT || 3000), () => console.log('Server start :)'));
