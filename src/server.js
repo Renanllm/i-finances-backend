@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
@@ -9,7 +11,7 @@ server.use(cors());
 server.use(express.json());
 
 mongoose
-    .connect('mongodb://localhost:27017/ifinances', {
+    .connect(process.env.MONGO_URL, {
         useUnifiedTopology: true,
         useNewUrlParser: true,
     })
@@ -21,4 +23,4 @@ requireDir('./models');
 
 server.use('/api', require('./routes'));
 
-server.listen(3000, () => console.log('Server start :)'));
+server.listen((process.env.PORT | 3000), () => console.log('Server start :)'));
