@@ -11,7 +11,7 @@ server.use(cors());
 server.use(express.json());
 
 mongoose
-    .connect(process.env.MONGO_URL, {
+    .connect(process.env.DATABASE_URL, {
         useUnifiedTopology: true,
         useNewUrlParser: true,
     })
@@ -23,4 +23,4 @@ requireDir('./models');
 
 server.use('/api', require('./routes'));
 
-server.listen((process.env.PORT || 3000), () => console.log('Server start :)'));
+server.listen((process.env.SERVER_PORT || 5000), () => console.log('Server start :)'));
