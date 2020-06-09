@@ -8,12 +8,16 @@ const ProfileSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    required: true
+    required: false
   },
   balance: {
     type: Number,
-    required: true
+    required: false
   },
+  password: {
+    type: String,
+    required: true
+  }
 });
 
 mongoose.model('Profile', ProfileSchema);

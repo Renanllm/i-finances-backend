@@ -5,16 +5,19 @@ const routes = express.Router();
 const MovementController = require('./controllers/MovementController');
 const ProfileController = require('./controllers/ProfileController');
 
+const verifyValidProfile = require('./middlewares/verifyValidProfile');
+
 // Movements routes
-routes.get('/movements', MovementController.getAll);
-routes.get('/movements/:id', MovementController.getById);
-routes.post('/movements', MovementController.register);
-routes.put('/movements/:id', MovementController.update);
-routes.delete('/movements/:id', MovementController.delete);
+routes.get('/movements', verifyValidProfile, MovementController.getAll);
+routes.get('/movements/:id', verifyValidProfile, MovementController.getById);
+routes.post('/movements', verifyValidProfile, MovementController.register);
+routes.put('/movements/:id', verifyValidProfile, MovementController.update);
+routes.delete('/movements/:id', verifyValidProfile, MovementController.delete);
 
 // Profile routes
-routes.get('/profile', ProfileController.getAll);
+routes.get('/profile', ProfileController.getUser);
 routes.post('/profile', ProfileController.register);
-routes.put('/profile/:id', ProfileController.update);
+routes.post('/profile/login', ProfileController.login);
+routes.delete('/profile/:id', ProfileController.delete);
 
 module.exports = routes;

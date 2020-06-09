@@ -5,7 +5,7 @@ const Profile = mongoose.model('Profile');
 
 module.exports = {
     async getAll(req, res) {
-        const { page = 1, limit } = req.query;
+        const { page = 1, limit = 10 } = req.query;
         const movements = await Movement.paginate({},
             {
                 page: parseInt(page),

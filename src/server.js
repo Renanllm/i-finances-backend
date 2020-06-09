@@ -2,12 +2,14 @@ require('dotenv').config();
 
 const express = require('express');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
 const requireDir = require('require-dir');
 
 const server = express();
 
 server.use(cors());
+server.use(cookieParser());
 server.use(express.json());
 
 mongoose

@@ -1,23 +1,58 @@
 const mongoose = require('mongoose');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 
 const Profile = mongoose.model('Profile');
 
+const BCRYPT_SALT_ROUNDS = parseInt(process.env.SALT_ROUNDS);
+const EXP_TIME_TOKEN = parseInt(process.env.EXP_TIME);
+
 module.exports = {
-    async getAll(req, res) {
+    async getUser(req, res) {
         const profile = await Profile.findOne();
 
         return res.json(profile);
     },
 
     async register(req, res) {
-        const profile = await Profile.create(req.body);
+        const name = req.body.name;
+        const password = req.body.password;
 
-        return res.json(profile);
+        const hashedPassword = await bcrypt.hash(password, BCRYPT_SALT_ROUNDS);
+        const profileModel = {
+            name, 
+            password: hashedPassword,
+            balance: req.body.balance,
+            email: req.body.email
+        }
+
+        await Profile.create(profileModel);
+
+        return res.status(200).send('Usuário cadastrado com sucesso!');
     },
 
-    async update(req, res) {
-        const profile = await Profile.findByIdAndUpdate(req.params.id, req.body, { new: true, useFindAndModify: false });
+    async login(req, res) {
+        let profile = await Profile.findOne({ name: req.body.name });
+        if (!profile) {
+            res.status(401).send('Não foi encontrado um usuário com o login informado!');
+        } else if (await bcrypt.compare(req.body.password, profile.password)) {
+            let payload = {
+                id: profile._id,
+                login: profile.login
+            };
+            var token = jwt.sign(payload, process.env.SECRET, {
+                expiresIn: EXP_TIME_TOKEN
+            });
 
-        return res.json(profile);
+            res.status(200).send({ auth: true, token: token });
+        } else {
+            res.status(401).send('Senha inválida!');
+        }
     },
+
+    async delete(req, res) {
+        await Profile.findByIdAndDelete(req.params.id)
+
+        return res.send();
+    }
 }
