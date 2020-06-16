@@ -59,7 +59,7 @@ module.exports = {
 
         const movement = await Movement.findByIdAndUpdate(req.params.id, req.body, { new: true, useFindAndModify: false });
 
-        const profile = await Profile.findOne();
+        const profile = await Profile.findById(req.userId);
 
         if (profile) {
             if (movement.value) {
