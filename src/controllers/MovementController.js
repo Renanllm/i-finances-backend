@@ -6,13 +6,15 @@ const Profile = mongoose.model('Profile');
 module.exports = {
     async getAll(req, res) {
         const { page = 1, limit = 10 } = req.query;
-        const movements = await Movement.paginate({},
+        const movements = await Movement.paginate({
+            idUser: req.userId
+        },
             {
                 page: parseInt(page),
                 limit: parseInt(limit),
                 sort: {
                     createdAt: -1
-                }
+                },
             }
         );
 
@@ -26,9 +28,14 @@ module.exports = {
     },
 
     async register(req, res) {
-        const movement = await Movement.create(req.body);
+        const movementDTO = {
+            ...req.body,
+            idUser: req.userId
+        }
 
-        const profile = await Profile.findOne();
+        const movement = await Movement.create(movementDTO);
+
+        const profile = await Profile.findById(req.userId);
 
         if (profile) {
             if (movement.value) {
@@ -59,7 +66,7 @@ module.exports = {
 
                 let newBalance = oldMovement.type === 'Saída' ?
                     profile.balance + oldMovement.value : profile.balance - oldMovement.value;
-                
+
                 profile.balance = newBalance;
 
                 newBalance = movement.type === 'Saída' ?

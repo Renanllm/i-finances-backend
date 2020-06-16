@@ -15,7 +15,7 @@ routes.put('/movements/:id', verifyValidProfile, MovementController.update);
 routes.delete('/movements/:id', verifyValidProfile, MovementController.delete);
 
 // Profile routes
-routes.get('/profile', ProfileController.getUser);
+routes.get('/profile', verifyValidProfile, ProfileController.getUser);
 routes.post('/profile', ProfileController.register);
 routes.post('/profile/login', ProfileController.login);
 routes.delete('/profile/:id', ProfileController.delete);

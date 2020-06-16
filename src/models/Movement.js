@@ -7,6 +7,9 @@ const MovementSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  idUser: {
+    type: String,
+  },
   category: {
     type: String,
     required: true

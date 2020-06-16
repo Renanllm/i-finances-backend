@@ -9,9 +9,14 @@ const EXP_TIME_TOKEN = parseInt(process.env.EXP_TIME);
 
 module.exports = {
     async getUser(req, res) {
-        const profile = await Profile.findOne();
+        const userId = req.userId;
 
-        return res.json(profile);
+        if (userId) {
+            const profile = await Profile.findById(userId);
+
+            return res.json(profile);
+        }
+
     },
 
     async register(req, res) {
@@ -20,7 +25,7 @@ module.exports = {
 
         const hashedPassword = await bcrypt.hash(password, BCRYPT_SALT_ROUNDS);
         const profileModel = {
-            name, 
+            name,
             password: hashedPassword,
             balance: req.body.balance,
             email: req.body.email
